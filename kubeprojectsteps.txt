@@ -1,0 +1,48 @@
+Steps to perform on linux machine/laptop (manually)
+
+Pre req
+
+Create ubuntu vm
+1. Install docker
+2. Install docker compose
+3. install az cli modules
+4. Install git
+5. Create acr/ecr
+6. Create sql server
+
+Clone repo in azure vm
+
+
+File alterations
+ 1. docker-compose.yml
+Change image name   acrnew1234.azurecr.io/myhealth.web to <your container regitry>/ myhealth.web
+
+2. Change app settings.json in directory /src/MyHealth.Web
+Input sql server name and databse name, user name
+
+3. in file mhc-aks.yaml change acr name  to <your container regitry>/ myhealth.web under front section
+
+No changes on docker-compose.ci-build.yml
+	
+Command to execute
+CI
+ 1. docker-compose -f docker-compose.ci.build.yml up
+ 2. docker-compose -f docker-compose.yml build
+
+create a token in acr/ecr for authentication and run the command like below
+3 .docker login -u jatinbhalla -p <token> acrnew1234.azurecr.io
+
+4. docker-compose -f docker-compose.yml push
+AFTER RUNNING TILL STEP 4 YOUR IMAGE SHOULD BE IN ACR/ECR
+
+CD- DEPLOYMENT
+1. az login
+2. az account set --subscription <YOUR SUBSCRIPTION> 
+3. az aks get-credentials --resource-group <YOUR RESOURCE GROUP NAME> --name <AKS CLUSTER NAME>
+4. kubectl apply -f mhc-aks.yaml
+5. kubectl get po
+6. kubectl get service mhc-front --watch
+7. TAKE LOAD BALANCER EXTERNAL IP AND HIT IT ON BROWSER
+
+
+
